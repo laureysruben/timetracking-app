@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+model User {
+  id           Int          @id @default(autoincrement())
+  name         String
+  email        String       @unique
+  passwordHash String
+  role         Role         @default(MEMBER)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  timeEntries  TimeEntry[]
+}
+
+model Domain {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  description String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  projects    Project[]
+  timeEntries TimeEntry[]
+}
+
+model Project {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  domainId    Int
+  domain      Domain     @relation(fields: [domainId], references: [id])
+
+  tasks       Task[]
+  timeEntries TimeEntry[]
+
+  @@index([domainId])
+}
+
+model Task {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  projectId   Int
+  project     Project    @relation(fields: [projectId], references: [id])
+
+  timeEntries TimeEntry[]
+
+  @@index([projectId])
+}
+
+model TimeEntry {
+  id              Int      @id @default(autoincrement())
+  start           DateTime
+  end             DateTime
+  durationMinutes Int
+  note            String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  userId   Int
+  user     User    @relation(fields: [userId], references: [id])
+
+  domainId Int
+  domain   Domain  @relation(fields: [domainId], references: [id])
+
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id])
+
+  taskId Int
+  task   Task @relation(fields: [taskId], references: [id])
+
+  @@index([userId])
+  @@index([domainId])
+  @@index([projectId])
+  @@index([taskId])
+  @@index([start])
+}
+

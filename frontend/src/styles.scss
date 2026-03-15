@@ -1,0 +1,14 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$violet-palette,
+  ),
+));
+
+@include mat.all-component-themes($theme);
+
+html, body { height: 100%; margin: 0; }
