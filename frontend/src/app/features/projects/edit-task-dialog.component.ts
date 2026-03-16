@@ -6,8 +6,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 
+export interface TaskFormValue {
+  name: string;
+  description?: string | null;
+  isActive: boolean;
+}
+
 @Component({
-  selector: 'app-add-task-dialog',
+  selector: 'app-edit-task-dialog',
   standalone: true,
   imports: [
     MatDialogModule,
@@ -18,7 +24,7 @@ import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule,
   ],
   template: `
-    <h2 mat-dialog-title>Add task</h2>
+    <h2 mat-dialog-title>Edit task</h2>
     <form [formGroup]="form" (ngSubmit)="submit()">
       <mat-dialog-content>
         <mat-form-field appearance="outline" class="full-width">
@@ -33,21 +39,23 @@ import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
       </mat-dialog-content>
       <mat-dialog-actions align="end">
         <button mat-button type="button" mat-dialog-close>Cancel</button>
-        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">Add</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">Save</button>
       </mat-dialog-actions>
     </form>
   `,
   styles: `.full-width { width: 100%; }`,
 })
-export class AddTaskDialogComponent {
-  private readonly ref = inject(MatDialogRef<AddTaskDialogComponent>);
+export class EditTaskDialogComponent {
+  private readonly ref = inject(MatDialogRef<EditTaskDialogComponent>);
   private readonly fb = inject(NonNullableFormBuilder);
-  readonly data = inject<{ projectId: number }>(MAT_DIALOG_DATA);
+  readonly data = inject<{ id: number; name: string; description: string | null; isActive: boolean }>(
+    MAT_DIALOG_DATA
+  );
 
   readonly form = this.fb.group({
-    name: [''],
-    description: [''],
-    isActive: true,
+    name: this.data.name,
+    description: this.data.description ?? '',
+    isActive: this.data.isActive,
   });
 
   submit() {
@@ -55,7 +63,7 @@ export class AddTaskDialogComponent {
       const raw = this.form.getRawValue();
       this.ref.close({
         name: raw.name,
-        description: raw.description || undefined,
+        description: raw.description || null,
         isActive: raw.isActive,
       });
     }
