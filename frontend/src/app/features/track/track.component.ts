@@ -54,106 +54,186 @@ interface TimeEntryRow {
     MatIconModule,
   ],
   template: `
-    <h1>Track time</h1>
-    <mat-card>
-      <mat-card-content>
-        <form [formGroup]="form" (ngSubmit)="onSubmit()">
-          <div class="form-row">
-            <mat-form-field appearance="outline">
-              <mat-label>Date</mat-label>
-              <input matInput [matDatepicker]="picker" formControlName="date" />
-              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <mat-label>Domain</mat-label>
-              <mat-select formControlName="domainId" (selectionChange)="onDomainChange()">
-                @for (d of domains(); track d.id) {
-                  <mat-option [value]="d.id">{{ d.name }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <mat-label>Project</mat-label>
-              <mat-select formControlName="projectId" (selectionChange)="onProjectChange()">
-                @for (p of projects(); track p.id) {
-                  <mat-option [value]="p.id">{{ p.name }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <mat-label>Task</mat-label>
-              <mat-select formControlName="taskId">
-                @for (t of tasks(); track t.id) {
-                  <mat-option [value]="t.id">{{ t.name }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="form-row">
-            <mat-form-field appearance="outline">
-              <mat-label>Start time</mat-label>
-              <input matInput type="time" formControlName="startTime" />
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <mat-label>End time</mat-label>
-              <input matInput type="time" formControlName="endTime" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="note">
-              <mat-label>Note</mat-label>
-              <input matInput formControlName="note" />
-            </mat-form-field>
-            <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">Add entry</button>
-          </div>
-        </form>
-      </mat-card-content>
-    </mat-card>
+    <section class="page-shell">
+      <header class="page-header">
+        <div class="page-title-group">
+          <h1 class="page-title">Track time</h1>
+          <p class="page-subtitle">Capture daily work quickly with domains, projects, and tasks.</p>
+        </div>
+      </header>
 
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Entries for {{ selectedDateLabel() }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <table mat-table [dataSource]="entriesDataSource()" class="entries-table">
-          <ng-container matColumnDef="domain">
-            <th mat-header-cell *matHeaderCellDef>Domain</th>
-            <td mat-cell *matCellDef="let row">{{ row.domain.name }}</td>
-          </ng-container>
-          <ng-container matColumnDef="project">
-            <th mat-header-cell *matHeaderCellDef>Project</th>
-            <td mat-cell *matCellDef="let row">{{ row.project.name }}</td>
-          </ng-container>
-          <ng-container matColumnDef="task">
-            <th mat-header-cell *matHeaderCellDef>Task</th>
-            <td mat-cell *matCellDef="let row">{{ row.task.name }}</td>
-          </ng-container>
-          <ng-container matColumnDef="duration">
-            <th mat-header-cell *matHeaderCellDef>Duration</th>
-            <td mat-cell *matCellDef="let row">{{ formatMinutes(row.durationMinutes) }}</td>
-          </ng-container>
-          <ng-container matColumnDef="note">
-            <th mat-header-cell *matHeaderCellDef>Note</th>
-            <td mat-cell *matCellDef="let row">{{ row.note || '-' }}</td>
-          </ng-container>
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let row">
-              <button mat-icon-button (click)="deleteEntry(row.id)" color="warn">
-                <mat-icon>delete</mat-icon>
+      <div class="stats-grid">
+        <mat-card class="surface-card">
+          <mat-card-content>
+            <div class="stat-label">Selected date</div>
+            <div class="stat-value">{{ selectedDateLabel() }}</div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="surface-card">
+          <mat-card-content>
+            <div class="stat-label">Entries</div>
+            <div class="stat-value">{{ entries().length }}</div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="surface-card">
+          <mat-card-content>
+            <div class="stat-label">Total tracked</div>
+            <div class="stat-value">{{ totalDurationLabel() }}</div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <mat-card class="surface-card">
+        <mat-card-header>
+          <mat-card-title>Add time entry</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Date</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="date" />
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Domain</mat-label>
+                <mat-select formControlName="domainId" (selectionChange)="onDomainChange()">
+                  @for (d of domains(); track d.id) {
+                    <mat-option [value]="d.id">{{ d.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Project</mat-label>
+                <mat-select formControlName="projectId" (selectionChange)="onProjectChange()">
+                  @for (p of projects(); track p.id) {
+                    <mat-option [value]="p.id">{{ p.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Task</mat-label>
+                <mat-select formControlName="taskId">
+                  @for (t of tasks(); track t.id) {
+                    <mat-option [value]="t.id">{{ t.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Start time</mat-label>
+                <input matInput type="time" formControlName="startTime" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>End time</mat-label>
+                <input matInput type="time" formControlName="endTime" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="note">
+                <mat-label>Note</mat-label>
+                <input matInput formControlName="note" />
+              </mat-form-field>
+              <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid" class="add-entry-btn">
+                <mat-icon>add</mat-icon>
+                Add entry
               </button>
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-      </mat-card-content>
-    </mat-card>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="surface-card">
+        <mat-card-header>
+          <mat-card-title>Entries for {{ selectedDateLabel() }}</mat-card-title>
+          <mat-card-subtitle>Review and maintain your tracked work.</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <table mat-table [dataSource]="entriesDataSource()" class="entries-table">
+            <ng-container matColumnDef="domain">
+              <th mat-header-cell *matHeaderCellDef>Domain</th>
+              <td mat-cell *matCellDef="let row">{{ row.domain.name }}</td>
+            </ng-container>
+            <ng-container matColumnDef="project">
+              <th mat-header-cell *matHeaderCellDef>Project</th>
+              <td mat-cell *matCellDef="let row">{{ row.project.name }}</td>
+            </ng-container>
+            <ng-container matColumnDef="task">
+              <th mat-header-cell *matHeaderCellDef>Task</th>
+              <td mat-cell *matCellDef="let row">{{ row.task.name }}</td>
+            </ng-container>
+            <ng-container matColumnDef="duration">
+              <th mat-header-cell *matHeaderCellDef>Duration</th>
+              <td mat-cell *matCellDef="let row">{{ formatMinutes(row.durationMinutes) }}</td>
+            </ng-container>
+            <ng-container matColumnDef="note">
+              <th mat-header-cell *matHeaderCellDef>Note</th>
+              <td mat-cell *matCellDef="let row">{{ row.note || '-' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let row">
+                <button mat-icon-button (click)="deleteEntry(row.id)" color="warn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+          @if (entries().length === 0) {
+            <div class="table-empty">No entries for this day yet.</div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </section>
   `,
   styles: `
-    .form-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; margin-bottom: 16px; }
-    .form-row mat-form-field { min-width: 140px; }
-    .note { flex: 1; min-width: 200px; }
-    .entries-table { width: 100%; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .stat-label {
+      color: var(--mat-sys-on-surface-variant);
+      font: var(--mat-sys-label-large);
+    }
+    .stat-value {
+      margin-top: 8px;
+      font: var(--mat-sys-headline-small);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+      margin-top: 10px;
+    }
+    .note {
+      grid-column: span 2;
+    }
+    .add-entry-btn {
+      height: 56px;
+      align-self: flex-start;
+    }
+    .entries-table {
+      width: 100%;
+    }
+    @media (max-width: 1100px) {
+      .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .note {
+        grid-column: span 2;
+      }
+    }
+    @media (max-width: 700px) {
+      .stats-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .note {
+        grid-column: auto;
+      }
+    }
   `,
 })
 export class TrackComponent {
@@ -182,6 +262,9 @@ export class TrackComponent {
     const d = this.form.get('date')?.value;
     return d ? toISODateString(d) : '';
   });
+  readonly totalDurationLabel = computed(() =>
+    formatMinutes(this.entries().reduce((total, entry) => total + entry.durationMinutes, 0))
+  );
 
   readonly entriesDataSource = computed(() => new MatTableDataSource(this.entries()));
 

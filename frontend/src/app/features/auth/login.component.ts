@@ -1,11 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
@@ -17,12 +18,17 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MatIconModule,
   ],
   template: `
-    <div class="login-container">
-      <mat-card>
+    <div class="login-page">
+      <mat-card class="login-card surface-card mat-elevation-z2">
         <mat-card-header>
-          <mat-card-title>Log in</mat-card-title>
+          <div class="login-badge" mat-card-avatar>
+            <mat-icon>schedule</mat-icon>
+          </div>
+          <mat-card-title>Welcome back</mat-card-title>
+          <mat-card-subtitle>Sign in to manage projects and tracked time.</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -35,7 +41,16 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Password</mat-label>
-              <input matInput type="password" formControlName="password" />
+              <input matInput [type]="showPassword() ? 'text' : 'password'" formControlName="password" />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+                (click)="showPassword.set(!showPassword())"
+              >
+                <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
               @if (form.get('password')?.invalid && form.get('password')?.touched) {
                 <mat-error>Password required</mat-error>
               }
@@ -46,13 +61,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
             <button
               mat-flat-button
               color="primary"
+              class="submit-button"
               type="submit"
               [disabled]="form.invalid || loading()"
             >
               @if (loading()) {
-                <mat-spinner diameter="24"></mat-spinner>
+                <mat-spinner diameter="20"></mat-spinner>
               } @else {
-                Log in
+                Sign in
               }
             </button>
           </form>
@@ -61,11 +77,47 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     </div>
   `,
   styles: `
-    .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 16px; }
-    mat-card { max-width: 400px; width: 100%; }
-    .full-width { width: 100%; }
-    form { display: flex; flex-direction: column; gap: 8px; }
-    .error { color: var(--mat-form-field-error-text-color, red); margin: 8px 0; }
+    .login-page {
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background:
+        radial-gradient(circle at top left, color-mix(in srgb, var(--mat-sys-primary) 24%, transparent), transparent 46%),
+        radial-gradient(circle at bottom right, color-mix(in srgb, var(--mat-sys-tertiary) 18%, transparent), transparent 42%),
+        var(--mat-sys-surface-container-lowest);
+    }
+    .login-card {
+      width: min(460px, 100%);
+      border-radius: 28px;
+      padding: 10px;
+    }
+    .login-badge {
+      display: grid;
+      place-items: center;
+      background: color-mix(in srgb, var(--mat-sys-primary) 18%, transparent);
+      color: var(--mat-sys-primary);
+      border-radius: 12px;
+    }
+    .full-width {
+      width: 100%;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .submit-button {
+      height: 44px;
+      margin-top: 6px;
+    }
+    .error {
+      margin: 0;
+      color: var(--mat-form-field-error-text-color, red);
+      font: var(--mat-sys-body-medium);
+    }
   `,
 })
 export class LoginComponent {
@@ -73,12 +125,13 @@ export class LoginComponent {
   private readonly auth = inject(AuthService);
 
   readonly form = this.fb.group({
-    email: [''],
-    password: [''],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required]],
   });
 
   protected loading = signal(false);
   protected errorMessage = signal('');
+  protected showPassword = signal(false);
 
   onSubmit() {
     this.errorMessage.set('');
