@@ -18,7 +18,7 @@ import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
   template: `
     <h2 mat-dialog-title>Add task</h2>
     <form [formGroup]="form" (ngSubmit)="submit()">
-      <mat-dialog-content>
+      <mat-dialog-content class="dialog-content">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Task name</mat-label>
           <input matInput formControlName="name" />
@@ -30,7 +30,14 @@ import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
       </mat-dialog-actions>
     </form>
   `,
-  styles: `.full-width { width: 100%; }`,
+  styles: `
+    .dialog-content {
+      padding-top: 6px;
+    }
+    .full-width {
+      width: 100%;
+    }
+  `,
 })
 export class AddTaskDialogComponent {
   private readonly ref = inject(MatDialogRef<AddTaskDialogComponent>);

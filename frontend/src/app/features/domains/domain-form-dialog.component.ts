@@ -20,7 +20,7 @@ import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
   template: `
     <h2 mat-dialog-title>{{ data ? 'Edit domain' : 'New domain' }}</h2>
     <form [formGroup]="form" (ngSubmit)="submit()">
-      <mat-dialog-content>
+      <mat-dialog-content class="dialog-content">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Name</mat-label>
           <input matInput formControlName="name" />
@@ -33,18 +33,32 @@ import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
       </mat-dialog-content>
       <mat-dialog-actions align="end">
         <button mat-button type="button" mat-dialog-close>Cancel</button>
-        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">Save</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+          Save
+        </button>
       </mat-dialog-actions>
     </form>
   `,
-  styles: `.full-width { width: 100%; }`,
+  styles: `
+    .dialog-content {
+      display: grid;
+      gap: 6px;
+      padding-top: 6px;
+    }
+    .full-width {
+      width: 100%;
+    }
+  `,
 })
 export class DomainFormDialogComponent {
   private readonly ref = inject(MatDialogRef<DomainFormDialogComponent>);
   private readonly fb = inject(NonNullableFormBuilder);
-  readonly data = inject<{ id: number; name: string; description: string | null; isActive: boolean } | null>(
-    MAT_DIALOG_DATA
-  );
+  readonly data = inject<{
+    id: number;
+    name: string;
+    description: string | null;
+    isActive: boolean;
+  } | null>(MAT_DIALOG_DATA);
 
   readonly form = this.fb.group({
     name: this.data?.name ?? '',
