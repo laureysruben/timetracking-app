@@ -52,7 +52,12 @@ interface Domain {
       </mat-dialog-content>
       <mat-dialog-actions align="end">
         <button mat-button type="button" mat-dialog-close>Cancel</button>
-        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || domains().length === 0">
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="form.invalid || domains().length === 0"
+        >
           Create
         </button>
       </mat-dialog-actions>
@@ -62,16 +67,10 @@ interface Domain {
     .dialog-content {
       display: grid;
       gap: 6px;
-      min-width: min(560px, 78vw);
       padding-top: 6px;
     }
     .full-width {
       width: 100%;
-    }
-    @media (max-width: 700px) {
-      .dialog-content {
-        min-width: auto;
-      }
     }
   `,
 })

@@ -25,7 +25,9 @@ interface Domain {
       <header class="page-header">
         <div class="page-title-group">
           <h1 class="page-title">Domains</h1>
-          <p class="page-subtitle">Create and maintain high-level categorization for project work.</p>
+          <p class="page-subtitle">
+            Create and maintain high-level categorization for project work.
+          </p>
         </div>
         <button mat-flat-button color="primary" (click)="openCreate()">
           <mat-icon>add</mat-icon>
@@ -96,7 +98,11 @@ export class DomainsListComponent {
   }
 
   openCreate() {
-    const ref = this.dialog.open(DomainFormDialogComponent, { data: null, width: '400px' });
+    const ref = this.dialog.open(DomainFormDialogComponent, {
+      data: null,
+      width: '520px',
+      maxWidth: '95vw',
+    });
     ref.afterClosed().subscribe((result) => {
       if (result) {
         this.api.post<Domain>('/domains', result).subscribe({
@@ -111,7 +117,11 @@ export class DomainsListComponent {
   }
 
   openEdit(d: Domain) {
-    const ref = this.dialog.open(DomainFormDialogComponent, { data: d, width: '400px' });
+    const ref = this.dialog.open(DomainFormDialogComponent, {
+      data: d,
+      width: '520px',
+      maxWidth: '95vw',
+    });
     ref.afterClosed().subscribe((result) => {
       if (result) {
         this.api.patch<Domain>(`/domains/${d.id}`, result).subscribe({

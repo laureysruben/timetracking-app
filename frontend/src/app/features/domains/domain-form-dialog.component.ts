@@ -33,7 +33,9 @@ import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
       </mat-dialog-content>
       <mat-dialog-actions align="end">
         <button mat-button type="button" mat-dialog-close>Cancel</button>
-        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">Save</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+          Save
+        </button>
       </mat-dialog-actions>
     </form>
   `,
@@ -41,25 +43,22 @@ import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
     .dialog-content {
       display: grid;
       gap: 6px;
-      min-width: min(520px, 78vw);
       padding-top: 6px;
     }
     .full-width {
       width: 100%;
-    }
-    @media (max-width: 700px) {
-      .dialog-content {
-        min-width: auto;
-      }
     }
   `,
 })
 export class DomainFormDialogComponent {
   private readonly ref = inject(MatDialogRef<DomainFormDialogComponent>);
   private readonly fb = inject(NonNullableFormBuilder);
-  readonly data = inject<{ id: number; name: string; description: string | null; isActive: boolean } | null>(
-    MAT_DIALOG_DATA
-  );
+  readonly data = inject<{
+    id: number;
+    name: string;
+    description: string | null;
+    isActive: boolean;
+  } | null>(MAT_DIALOG_DATA);
 
   readonly form = this.fb.group({
     name: this.data?.name ?? '',

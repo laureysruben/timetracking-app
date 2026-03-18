@@ -1,6 +1,11 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { ApiService } from '../../core/services/api.service';
-import { startOfDay, endOfDay, toISODateString, formatMinutes } from '../../shared/utils/date.utils';
+import {
+  startOfDay,
+  endOfDay,
+  toISODateString,
+  formatMinutes,
+} from '../../shared/utils/date.utils';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -132,7 +137,13 @@ interface TimeEntryRow {
                 <mat-label>Note</mat-label>
                 <input matInput formControlName="note" />
               </mat-form-field>
-              <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid" class="add-entry-btn">
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                [disabled]="form.invalid"
+                class="add-entry-btn"
+              >
                 <mat-icon>add</mat-icon>
                 Add entry
               </button>
@@ -263,7 +274,7 @@ export class TrackComponent {
     return d ? toISODateString(d) : '';
   });
   readonly totalDurationLabel = computed(() =>
-    formatMinutes(this.entries().reduce((total, entry) => total + entry.durationMinutes, 0))
+    formatMinutes(this.entries().reduce((total, entry) => total + entry.durationMinutes, 0)),
   );
 
   readonly entriesDataSource = computed(() => new MatTableDataSource(this.entries()));
@@ -280,7 +291,9 @@ export class TrackComponent {
   private loadEntries(date: Date) {
     const from = startOfDay(date).toISOString();
     const to = endOfDay(date).toISOString();
-    this.api.get<TimeEntryRow[]>('/time-entries', { from, to }).subscribe((list) => this.entries.set(list));
+    this.api
+      .get<TimeEntryRow[]>('/time-entries', { from, to })
+      .subscribe((list) => this.entries.set(list));
   }
 
   onDomainChange() {
@@ -289,7 +302,9 @@ export class TrackComponent {
     this.projects.set([]);
     this.tasks.set([]);
     if (id) {
-      this.api.get<Project[]>('/projects', { domainId: id }).subscribe((list) => this.projects.set(list));
+      this.api
+        .get<Project[]>('/projects', { domainId: id })
+        .subscribe((list) => this.projects.set(list));
     }
   }
 
@@ -311,14 +326,21 @@ export class TrackComponent {
     const d = toISODateString(raw.date);
     const startDt = `${d}T${startTime}:00`;
     const endDt = `${d}T${endTime}:00`;
-    this.api.post<TimeEntryRow>('/time-entries', { taskId, start: startDt, end: endDt, note: raw.note || undefined }).subscribe({
-      next: () => {
-        this.snackBar.open('Entry added', '', { duration: 2000 });
-        this.loadEntries(raw.date!);
-        this.form.patchValue({ note: '' });
-      },
-      error: (err) => this.snackBar.open(err.error?.message ?? 'Failed to add entry', 'Close'),
-    });
+    this.api
+      .post<TimeEntryRow>('/time-entries', {
+        taskId,
+        start: startDt,
+        end: endDt,
+        note: raw.note || undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.snackBar.open('Entry added', '', { duration: 2000 });
+          this.loadEntries(raw.date!);
+          this.form.patchValue({ note: '' });
+        },
+        error: (err) => this.snackBar.open(err.error?.message ?? 'Failed to add entry', 'Close'),
+      });
   }
 
   deleteEntry(id: number) {

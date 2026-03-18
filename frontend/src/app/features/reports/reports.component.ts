@@ -53,13 +53,23 @@ interface ReportByUserRow {
           <div class="filters">
             <mat-form-field appearance="outline">
               <mat-label>From</mat-label>
-              <input matInput [matDatepicker]="fromPicker" [ngModel]="from()" (ngModelChange)="from.set($event)" />
+              <input
+                matInput
+                [matDatepicker]="fromPicker"
+                [ngModel]="from()"
+                (ngModelChange)="from.set($event)"
+              />
               <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
               <mat-datepicker #fromPicker></mat-datepicker>
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>To</mat-label>
-              <input matInput [matDatepicker]="toPicker" [ngModel]="to()" (ngModelChange)="to.set($event)" />
+              <input
+                matInput
+                [matDatepicker]="toPicker"
+                [ngModel]="to()"
+                (ngModelChange)="to.set($event)"
+              />
               <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
               <mat-datepicker #toPicker></mat-datepicker>
             </mat-form-field>
@@ -143,12 +153,14 @@ export class ReportsComponent {
   private readonly api = inject(ApiService);
   readonly auth = inject(AuthService);
 
-  readonly from = signal<Date>((() => {
-    const d = new Date();
-    d.setDate(1);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  })());
+  readonly from = signal<Date>(
+    (() => {
+      const d = new Date();
+      d.setDate(1);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    })(),
+  );
   readonly to = signal<Date>(new Date());
 
   readonly byProject = signal<ReportByProjectRow[]>([]);

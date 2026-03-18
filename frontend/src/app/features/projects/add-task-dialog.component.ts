@@ -32,16 +32,10 @@ import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
   `,
   styles: `
     .dialog-content {
-      min-width: min(460px, 78vw);
       padding-top: 6px;
     }
     .full-width {
       width: 100%;
-    }
-    @media (max-width: 700px) {
-      .dialog-content {
-        min-width: auto;
-      }
     }
   `,
 })

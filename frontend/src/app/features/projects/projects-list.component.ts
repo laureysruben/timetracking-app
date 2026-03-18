@@ -20,7 +20,14 @@ interface Project {
 @Component({
   selector: 'app-projects-list',
   standalone: true,
-  imports: [MatCardModule, MatTableModule, MatButtonModule, MatIconModule, MatChipsModule, RouterLink],
+  imports: [
+    MatCardModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
+    RouterLink,
+  ],
   template: `
     <section class="page-shell">
       <header class="page-header">
@@ -94,7 +101,7 @@ export class ProjectsListComponent {
   }
 
   openCreate() {
-    const ref = this.dialog.open(AddProjectDialogComponent, { width: '400px' });
+    const ref = this.dialog.open(AddProjectDialogComponent, { width: '560px', maxWidth: '95vw' });
     ref.afterClosed().subscribe((result) => {
       if (result) {
         this.api.post<Project>('/projects', result).subscribe({
@@ -102,7 +109,8 @@ export class ProjectsListComponent {
             this.snackBar.open('Project created', '', { duration: 2000 });
             this.load();
           },
-          error: (err) => this.snackBar.open(err.error?.message ?? 'Failed to create project', 'Close'),
+          error: (err) =>
+            this.snackBar.open(err.error?.message ?? 'Failed to create project', 'Close'),
         });
       }
     });

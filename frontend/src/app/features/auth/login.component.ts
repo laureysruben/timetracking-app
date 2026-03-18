@@ -41,7 +41,11 @@ import { MatIconModule } from '@angular/material/icon';
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Password</mat-label>
-              <input matInput [type]="showPassword() ? 'text' : 'password'" formControlName="password" />
+              <input
+                matInput
+                [type]="showPassword() ? 'text' : 'password'"
+                formControlName="password"
+              />
               <button
                 mat-icon-button
                 matSuffix
@@ -84,8 +88,16 @@ import { MatIconModule } from '@angular/material/icon';
       justify-content: center;
       align-items: center;
       background:
-        radial-gradient(circle at top left, color-mix(in srgb, var(--mat-sys-primary) 24%, transparent), transparent 46%),
-        radial-gradient(circle at bottom right, color-mix(in srgb, var(--mat-sys-tertiary) 18%, transparent), transparent 42%),
+        radial-gradient(
+          circle at top left,
+          color-mix(in srgb, var(--mat-sys-primary) 24%, transparent),
+          transparent 46%
+        ),
+        radial-gradient(
+          circle at bottom right,
+          color-mix(in srgb, var(--mat-sys-tertiary) 18%, transparent),
+          transparent 42%
+        ),
         var(--mat-sys-surface-container-lowest);
     }
     .login-card {

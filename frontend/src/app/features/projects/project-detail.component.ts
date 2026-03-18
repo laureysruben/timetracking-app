@@ -27,7 +27,14 @@ interface Project {
 @Component({
   selector: 'app-project-detail',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, MatListModule, MatIconModule, MatChipsModule, RouterLink],
+  imports: [
+    MatCardModule,
+    MatButtonModule,
+    MatListModule,
+    MatIconModule,
+    MatChipsModule,
+    RouterLink,
+  ],
   template: `
     <section class="page-shell">
       <header class="page-header">
@@ -112,7 +119,11 @@ export class ProjectDetailComponent {
   openAddTask() {
     const projectId = this.project()?.id;
     if (!projectId) return;
-    const ref = this.dialog.open(AddTaskDialogComponent, { data: { projectId }, width: '400px' });
+    const ref = this.dialog.open(AddTaskDialogComponent, {
+      data: { projectId },
+      width: '460px',
+      maxWidth: '95vw',
+    });
     ref.afterClosed().subscribe((name) => {
       if (name) {
         this.api.post<Task>(`/projects/${projectId}/tasks`, { projectId, name }).subscribe({
